@@ -4,34 +4,40 @@ import sqlite3
 
 
 class Character:
-    def __init__(self, name, stats, level, proficiencies, expertise=None):
+    def __init__(self, name, stats, level, proficiencies=None, expertise=None):
         self.name = name
         self.stats = {k: int(v) for k, v in zip(['str', 'dex', 'con', 'int', 'wis', 'cha'], stats)}
         self.modifiers = {k: math.floor((v - 10) / 2) for k, v in self.stats.items()}
         self.level = level
-        self.proficient = proficiencies
+        self.proficient = proficiencies or []
         self.expertise = expertise or []
         self.proficiency_bonus = 2 + (level - 1) // 4
 
 
 def add_character():
-    conn = sqlite3.connect('characters.db')
+    conn = sqlite3.connect('dnd_characters.db')
     c = conn.cursor()
 
-    #c.execute("""CREATE TABLE characters (
-            #name text,
-            #level integer,
+    c.execute("""CREATE TABLE characters (
+            name text,
+            level integer,
 
-            #strength integer,
-            #dex integer,
-            #constitution integer,
-            #intelligence integer,
-            #wisdom integer,
-            #charisma integer,
+            race text,
+            subrace text,
+            character_class text,
+            subclass text,
 
-            #proficiencies text,
-            #expertise text
-    #)""")
+            strength integer,
+            dex integer,
+            constitution integer,
+            intelligence integer,
+            wisdom integer,
+            charisma integer,
+
+            background text,
+            proficiencies text,
+            expertise text
+    )""")
 
     character_name = input("Character Name: ")
 
@@ -67,7 +73,7 @@ def add_character():
         c.execute("""INSERT INTO characters (
             name, level, strength, dex, constitution, intelligence, wisdom, charisma, proficiencies, expertise
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        (character_name, character_level, str_stat, dex_stat, con_stat, int_stat, wis_stat, cha_stat, proficiencies_str, expertise_str))
+        (character_name, character_level, str_stat, dex_stat, con_stat, int_stat, wis_stat, cha_stat, proficiencies, expertise))
 
         conn.commit()
         print(f"{character_name} saved to database.")
@@ -80,22 +86,3 @@ def add_character():
 
 created_character = add_character()
 print(f"Created Character: {created_character.name} (Level {created_character.level})")
-
-
-
-
-
-
-#def athletics():
-    
-    #check = [random.randint(1, 20)] + self.modifers
-
-    #if proficiencies == "Athletics":
-        #final_score = check + prof_bonus
-    #else:
-        #final_score = check
-
-    #print("{my_character} makes an Athletics Check: {check} + {prof_bonus} = {final score}")
-    #print(final_score)
-
-#print(athletics())
